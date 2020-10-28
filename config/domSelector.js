@@ -5,6 +5,7 @@ module.exports = {
     loginPasswordInput: '#input__password'
   },
   homePage: {
-    timeLineItem: '.NicorepoItem'
+    timeLineItem: '.NicorepoItem',
+    getMoreBtn: '.NicorepoTimeline-more'
   }
 }

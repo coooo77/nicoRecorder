@@ -3,7 +3,7 @@ require('dotenv').config()
 module.exports = {
   setting: {
     executablePath: "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-    headless: false,
+    headless: true,
     userDataDir: "./userData"
   },
   url: {
