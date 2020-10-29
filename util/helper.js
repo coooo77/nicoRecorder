@@ -12,12 +12,13 @@ const helper = {
       const userId = userIdUrl.replace('https://www.nicovideo.jp/user/', '')
       const streamUrl = body.children[1].href
       const id = streamUrl.replace('https://live.nicovideo.jp/watch/lv', '')
+      const createdTime = Date.now()
       return ({
         id: Number(id),
         userName,
         userId,
         streamUrl,
-        createdTime: Date.now(),
+        createdTime,
         isRecorded: false
       })
     }))

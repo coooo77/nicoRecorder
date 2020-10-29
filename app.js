@@ -2,6 +2,8 @@ require('dotenv').config()
 const { wait, getStreamRecords } = require('./util/helper')
 const { setting, url } = require('./config/config')
 const { login, homePage } = require('./config/domSelector')
+const fs = require('fs')
+
 const puppeteer = require('puppeteer-core');
 
 (async () => {
@@ -11,7 +13,7 @@ const puppeteer = require('puppeteer-core');
     await page.goto(url.nicovideo, { waitUntil: 'domcontentloaded' });
 
     const { loginBtnSelector, loginAccountInput, loginPasswordInput } = login
-    // 檢查是否需要登入
+    // // 檢查是否需要登入
     const loginBtn = await page.$(loginBtnSelector)
     if (loginBtn) {
       console.log('[System]User needs to login, start to login...')
@@ -33,8 +35,36 @@ const puppeteer = require('puppeteer-core');
     await page.waitForSelector(getMoreBtn)
     const records = await getStreamRecords(page, timeLineItem)
 
-    console.log('records ==>', records)
+    // 讀取記錄檔案    
+    // 移動到helpers記得要把上面的fs給取消
+    // 設定超過一天的日期就不錄影了
+    let streamRecords = await fs.readFileSync('./model/streamRecords.json', 'utf8', (err, data) => data)
+    streamRecords = JSON.parse(streamRecords)
 
+    for (record of records) {
+      // 對照紀錄，並把新紀錄給加入並錄影
+      if (!streamRecords.ids.includes(record.id)) {
+        console.log(`[System]Find a new record, save it to model and record the stream.`)
+        streamRecords.ids.push(record.id)
+        streamRecords.records.push(record)
+
+        // console.log(`[System]開始對${record.userName}錄影，網址為${record.streamUrl}`)
+      }
+    }
+
+    // 清除超過時限的錄影紀錄
+
+
+    // 貯存紀錄
+    fs.writeFile(
+      './model/isStreaming.json',
+      JSON.stringify(streamRecords),
+      'utf8',
+      (error) => {
+        console.log(error);
+      })
+
+    console.log('Done')
   } catch (error) {
     console.log(error.name + ': ' + error.message)
   } finally {

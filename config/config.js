@@ -11,5 +11,9 @@ module.exports = {
   },
   interval: 60000,
   userFilter: false,
-  addNewUser: true
+  addNewUser: true,
+  saveRecordConfig: {
+    saveRecordLog: true,
+    recordLifeSpan: 1000 * 60 * 60 * 24 * 30
+  }
 }
