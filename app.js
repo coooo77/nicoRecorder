@@ -40,8 +40,22 @@ const puppeteer = require('puppeteer-core');
     // 設定超過一天的日期就不錄影了
     let streamRecords = await fs.readFileSync('./model/streamRecords.json', 'utf8', (err, data) => data)
     streamRecords = JSON.parse(streamRecords)
+    let usersData = await fs.readFileSync('./model/usersData.json', 'utf8', (err, data) => data)
+    usersData = JSON.parse(usersData)
 
     for (record of records) {
+      // 更新使用者資料
+      if (!usersData.ids.includes(record.userId)) {
+        usersData.records.push({
+          id: usersData.ids.length,
+          userName: record.userName,
+          userId: record.userId,
+          engName: `UnNamed${usersData.ids.length}`,
+          disableTrack: false
+        })
+        usersData.ids.push(record.userId)
+      }
+
       // 對照紀錄，並把新紀錄給加入並錄影
       if (!streamRecords.ids.includes(record.id)) {
         console.log(`[System]Find a new record, save it to model and record the stream.`)
@@ -59,6 +73,13 @@ const puppeteer = require('puppeteer-core');
     fs.writeFile(
       './model/isStreaming.json',
       JSON.stringify(streamRecords),
+      'utf8',
+      (error) => {
+        console.log(error);
+      })
+    fs.writeFile(
+      './model/usersData.json',
+      JSON.stringify(usersData),
       'utf8',
       (error) => {
         console.log(error);
