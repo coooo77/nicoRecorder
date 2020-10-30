@@ -9,11 +9,20 @@ module.exports = {
   url: {
     nicovideo: "https://www.nicovideo.jp/my"
   },
-  interval: 60000,
-  userFilter: false,
-  addNewUser: true,
+  checkStreamInterval: 60000,
+  userFilter: {
+    active: false,
+    blockList: []
+  },
+  upDateUserData: {
+    active: true
+  },
   saveRecordConfig: {
-    saveRecordLog: true,
+    active: true,
     recordLifeSpan: 1000 * 60 * 60 * 24 * 30
+  },
+  recordSetting: {
+    reTryInterval: 30,
+    maxTryTimes: 60
   }
 }
