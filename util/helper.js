@@ -1,4 +1,5 @@
 const { recordSetting } = require('../config/config')
+const cp = require('child_process')
 const fs = require('fs')
 
 const helper = {
@@ -6,7 +7,7 @@ const helper = {
     return new Promise(resolve => setTimeout(() => resolve(), ms))
   },
   async getStreamRecords(page, timeLineItem) {
-    const records = await page.$$eval(timeLineItem, items => items.map(item => {
+    const records = await page.$$eval(timeLineItem, (items) => items.map(item => {
       const parentNode = item.children[0]
       const header = parentNode.children[0]
       const body = parentNode.children[1]
@@ -16,12 +17,14 @@ const helper = {
       const streamUrl = body.children[1].href
       const id = streamUrl.replace('https://live.nicovideo.jp/watch/lv', '')
       const createdTime = Date.now()
+      const createdLocalTime = new Date()
       return ({
         id: Number(id),
         userName,
         userId,
         streamUrl,
         createdTime,
+        createdLocalTime: createdLocalTime.toLocaleString(),
         isRecorded: false
       })
     }))
@@ -73,10 +76,38 @@ const helper = {
     })
     usersData.ids.push(record.userId)
   },
-  recorderMaker(record, name = record.id){
-    fs.writeFile(`./recorder/@${name}.bat`, this.commandMaker(record.id, record.streamUrl), (error) => {
+  recorderMaker(record, fileName) {
+    fs.writeFile(`./recorder/${fileName}.bat`, helper.commandMaker(fileName, record.streamUrl), (error) => {
       console.log(error);
     })
+  },
+  execFile(fileName, dirName) {
+    const commands = cp.exec('start ' + dirName + `\\recorder\\${fileName}.bat`, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`)
+      }
+    })
+    process.on('exit', function () {
+      console.log(`${fileName}'s record process killed`)
+      commands.kill()
+    })
+  },
+  timeRecord() {
+    const time = new Date()
+    const
+      year = time.getFullYear(),
+      month = time.getMonth() + 1,
+      date = time.getDate(),
+      hour = time.getHours(),
+      minute = time.getMinutes()
+    return `${year}${month}${date}_${hour}${minute}`
+  },
+  startToRecord(userData, record, streamRecords, dirname) {
+    const fileName = `@${userData.engName}_${record.id}_${helper.timeRecord()}`
+    helper.recorderMaker(record, fileName)
+    helper.execFile(fileName, dirname)
+    const recordIndex = streamRecords.records.findIndex(item => record.id === item.id)
+    streamRecords.records[recordIndex].isRecorded = true
   }
 }
 
