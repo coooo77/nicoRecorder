@@ -4,7 +4,9 @@
   "description": "website niconico web crawler",
   "main": "app.js",
   "scripts": {
-    "dev": "node app.js"
+    "nico": "node app.js",
+    "dev": "node nico.js",
+    "init": "node init.js"
   },
   "author": "coooo77",
   "license": "ISC",

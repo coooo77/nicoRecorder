@@ -129,6 +129,9 @@ const helper = {
     const records = streamRecords.records.filter(record => record.createdTime + saveRecordConfig.recordLifeSpan > now)
     streamRecords.records = records
     streamRecords.ids = records.map(record => record.id)
+  },
+  timeAnnounce(count) {
+    console.log(`\n第${count++}次執行檢查，輸入ctrl+c結束錄影 ${new Date().toLocaleString()}`)
   }
 }
 

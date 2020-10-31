@@ -1,11 +1,8 @@
 const helper = require('./util/helper')
-const { setting, url, saveRecordConfig } = require('./config/config')
+const { url, saveRecordConfig } = require('./config/config')
 const { login, homePage } = require('./config/domSelector')
 
-const puppeteer = require('puppeteer-core');
-
-(async () => {
-  const browser = await puppeteer.launch(setting);
+module.exports = async (browser) => {
   const page = await browser.newPage();
   try {
     await page.goto(url.nicovideo, { waitUntil: 'domcontentloaded' });
@@ -72,6 +69,6 @@ const puppeteer = require('puppeteer-core');
   } catch (error) {
     console.log(error.name + ': ' + error.message)
   } finally {
-    await browser.close();
+    await page.close();
   }
-})();
+};
