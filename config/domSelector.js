@@ -6,6 +6,7 @@ module.exports = {
   },
   homePage: {
     timeLineItem: '.NicorepoItem',
+    activeTimeLineItem: '.NicorepoItem-activityCreatedAt_new',
     getMoreBtn: '.NicorepoTimeline-more'
   }
 }

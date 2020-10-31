@@ -20,9 +20,9 @@ const helper = {
       page.waitForNavigation()
     ])
   },
-  async getStreamRecords(page, timeLineItem) {
-    const records = await page.$$eval(timeLineItem, (items) => items.map(item => {
-      const parentNode = item.children[0]
+  async getStreamRecords(page, selector) {
+    const records = await page.$$eval(selector, (items) => items.map(item => {
+      const parentNode = item.parentElement.parentElement.parentElement
       const header = parentNode.children[0]
       const body = parentNode.children[1]
       const userName = header.innerText
@@ -133,7 +133,7 @@ const helper = {
   timeAnnounce(count) {
     console.log(`\n第${count++}次執行檢查，輸入ctrl+c結束錄影 ${new Date().toLocaleString()}`)
   },
-  announcer(message){
+  announcer(message) {
     console.log(`[System]${message}`)
   }
 }

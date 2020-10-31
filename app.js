@@ -20,10 +20,10 @@ module.exports = async (browser) => {
     // 開始取得實況紀錄
     helper.wait(2000)
     announcer(app.startToFetchRecords)
-    const { timeLineItem, getMoreBtn } = homePage
+    const { activeTimeLineItem, getMoreBtn } = homePage
 
     await page.waitForSelector(getMoreBtn)
-    const records = await helper.getStreamRecords(page, timeLineItem)
+    const records = await helper.getStreamRecords(page, activeTimeLineItem)
 
     // 讀取記錄檔案
     const [streamRecords, usersData] = await Promise.all([
