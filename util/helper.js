@@ -132,6 +132,9 @@ const helper = {
   },
   timeAnnounce(count) {
     console.log(`\n第${count++}次執行檢查，輸入ctrl+c結束錄影 ${new Date().toLocaleString()}`)
+  },
+  announcer(message){
+    console.log(`[System]${message}`)
   }
 }
 
