@@ -29,3 +29,4 @@ module.exports = {
 }
 
 // saveRecordConfig.recordLifeSpan: 設定幾毫秒後刪除資料，預設是1000 * 60 * 60 * 24 * 7 = 7天內的資料都保存
+// userFilter、upDateUserData 尚未實用該功能
