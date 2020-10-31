@@ -9,20 +9,23 @@ module.exports = {
   url: {
     nicovideo: "https://www.nicovideo.jp/my"
   },
-  checkStreamInterval: 60000,
+  checkStreamInterval: 1000 * 60,
   userFilter: {
-    active: false,
+    isActive: false,
     blockList: []
   },
   upDateUserData: {
-    active: true
+    isActive: true
   },
   saveRecordConfig: {
-    active: true,
-    recordLifeSpan: 1000 * 60 * 60 * 24 * 30
+    isActive: true,
+    recordLifeSpan: 1000 * 60 * 60 * 24 * 7
   },
   recordSetting: {
     reTryInterval: 30,
-    maxTryTimes: 60
+    maxTryTimes: 60,
+    prefix: '@'
   }
 }
+
+// saveRecordConfig.recordLifeSpan: 設定幾毫秒後刪除資料，預設是1000 * 60 * 60 * 24 * 7 = 7天內的資料都保存

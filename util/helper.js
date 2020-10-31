@@ -1,10 +1,24 @@
-const { recordSetting } = require('../config/config')
+const { saveRecordConfig, recordSetting } = require('../config/config')
+const { login } = require('../config/domSelector')
 const cp = require('child_process')
 const fs = require('fs')
+require('dotenv').config()
 
 const helper = {
   wait(ms) {
     return new Promise(resolve => setTimeout(() => resolve(), ms))
+  },
+  async login(page) {
+    const { loginBtnSelector, loginAccountInput, loginPasswordInput } = login
+    await page.click(loginAccountInput)
+    await page.keyboard.type(process.env.NICO_ACCOUNT)
+    await page.click(loginPasswordInput)
+    await page.keyboard.type(process.env.NICO_PASSWORD)
+    helper.wait(2000)
+    await Promise.all([
+      page.click(loginBtnSelector),
+      page.waitForNavigation()
+    ])
   },
   async getStreamRecords(page, timeLineItem) {
     const records = await page.$$eval(timeLineItem, (items) => items.map(item => {
@@ -100,14 +114,21 @@ const helper = {
       date = time.getDate(),
       hour = time.getHours(),
       minute = time.getMinutes()
-    return `${year}${month}${date}_${hour}${minute}`
+    return `${year}_${month}${date}_${hour}${minute}`
   },
   startToRecord(userData, record, streamRecords, dirname) {
-    const fileName = `@${userData.engName}_${record.id}_${helper.timeRecord()}`
+    // const fileName = `${recordSetting.prefix}${userData.engName}_${record.id}_${helper.timeRecord()}`
+    const fileName = `${recordSetting.prefix}${userData.engName}_${record.id}`
     helper.recorderMaker(record, fileName)
     helper.execFile(fileName, dirname)
     const recordIndex = streamRecords.records.findIndex(item => record.id === item.id)
     streamRecords.records[recordIndex].isRecorded = true
+  },
+  deleteStreamRecords(streamRecords) {
+    const now = Date.now()
+    const records = streamRecords.records.filter(record => record.createdTime + saveRecordConfig.recordLifeSpan > now)
+    streamRecords.records = records
+    streamRecords.ids = records.map(record => record.id)
   }
 }
 

@@ -1,6 +1,5 @@
-require('dotenv').config()
 const helper = require('./util/helper')
-const { setting, url } = require('./config/config')
+const { setting, url, saveRecordConfig } = require('./config/config')
 const { login, homePage } = require('./config/domSelector')
 
 const puppeteer = require('puppeteer-core');
@@ -11,20 +10,12 @@ const puppeteer = require('puppeteer-core');
   try {
     await page.goto(url.nicovideo, { waitUntil: 'domcontentloaded' });
 
-    const { loginBtnSelector, loginAccountInput, loginPasswordInput } = login
-    // // 檢查是否需要登入
-    const loginBtn = await page.$(loginBtnSelector)
+    // 檢查是否需要登入
+    const { loginBtnSelector } = login
+    const [loginBtn] = await Promise.all([page.$(loginBtnSelector)])
     if (loginBtn) {
       console.log('[System]User needs to login, start to login...')
-      await page.click(loginAccountInput)
-      await page.keyboard.type(process.env.NICO_ACCOUNT)
-      await page.click(loginPasswordInput)
-      await page.keyboard.type(process.env.NICO_PASSWORD)
-      helper.wait(2000)
-      await Promise.all([
-        page.click(loginBtnSelector),
-        page.waitForNavigation()
-      ])
+      await helper.login(page)
     }
 
     // 開始取得實況紀錄
@@ -35,10 +26,11 @@ const puppeteer = require('puppeteer-core');
     await page.waitForSelector(getMoreBtn)
     const records = await helper.getStreamRecords(page, timeLineItem)
 
-    // 讀取記錄檔案    
-    // TODO:設定超過一天的日期就不錄影了
-    const streamRecords = await helper.getJSObjData('streamRecords')
-    const usersData = await helper.getJSObjData('usersData')
+    // 讀取記錄檔案
+    const [streamRecords, usersData] = await Promise.all([
+      helper.getJSObjData('streamRecords'),
+      helper.getJSObjData('usersData')
+    ])
     const oldRecordLength = streamRecords.ids.length
 
     for (record of records) {
@@ -49,7 +41,7 @@ const puppeteer = require('puppeteer-core');
 
       // 對照紀錄，並把新紀錄給加入並錄影
       if (!streamRecords.ids.includes(record.id)) {
-        console.log(`[System]Find a new record, save it to model and record the stream.`)
+        console.log(`\n[System]Find a new record, save it to model and record the stream.`)
         streamRecords.ids.push(record.id)
         streamRecords.records.push(record)
 
@@ -64,11 +56,10 @@ const puppeteer = require('puppeteer-core');
       }
     }
 
-
-
-
-    // 清除超過時限的錄影紀錄 // 要看哪個的設定? userData?還是config裡面的名單?
-    // 需要一個初始化的設定，把需要建立的空白資料給建立
+    // 清除超過時限的錄影紀錄
+    if (saveRecordConfig.isActive) {
+      helper.deleteStreamRecords(streamRecords)
+    }
 
     // 貯存紀錄
     console.log(`[System]Records ${oldRecordLength === streamRecords.ids.length ? 'unChanged' : 'updated'}`)
@@ -81,6 +72,6 @@ const puppeteer = require('puppeteer-core');
   } catch (error) {
     console.log(error.name + ': ' + error.message)
   } finally {
-    // await browser.close();
+    await browser.close();
   }
 })();
