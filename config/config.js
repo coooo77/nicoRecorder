@@ -19,12 +19,12 @@ module.exports = {
   },
   saveRecordConfig: {
     isActive: true,
-    recordLifeSpan: 1000 * 60 * 60 * 24 * 7
+    recordLifeSpan: 1000 * 60 * 60 * 24 * 1
   },
   recordSetting: {
     reTryInterval: 30,
     maxTryTimes: 60,
-    prefix: '@'
+    prefix: '$'
   }
 }
 

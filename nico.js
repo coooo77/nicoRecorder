@@ -1,15 +1,16 @@
 const { setting, checkStreamInterval } = require('./config/config.js')
-const { timeAnnounce } = require('./util/helper')
-const nico = require('./app')
+const { nico } = require('./config/announce')
+const { timeAnnounce, announcer } = require('./util/helper')
+const app = require('./app')
 const puppeteer = require('puppeteer-core');
 (async () => {
-  console.log('[System]Start to monitor nico web site ...')
+  announcer(nico.startToMonitor)
   let count = 1
-  timeAnnounce(count++)
+  announcer(nico.timeAnnounce(count++),true)
   const browser = await puppeteer.launch(setting);
-  await nico(browser)
+  await app(browser)
   setInterval(async function () {
-    timeAnnounce(count++)
-    await nico(browser)
+    announcer(nico.timeAnnounce(count++), true)
+    await app(browser)
   }, checkStreamInterval)
 })()

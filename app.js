@@ -48,13 +48,11 @@ module.exports = async (browser) => {
         const userData = usersData.records.find(user => user.userId === record.userId)
         if (!userData.disableTrack) {
           const { startToRecord } = app
-          const { pre, post } = startToRecord
-          announcer(`${pre}${record.userName}${post}${record.streamUrl}`)
+          announcer(startToRecord(record.userName, record.streamUrl))
           helper.startToRecord(userData, record, streamRecords, __dirname)
         } else {
           const { stopToRecord } = app
-          const { pre, post } = stopToRecord
-          announcer(`${pre}${record.userName}${post}`)
+          announcer(stopToRecord(record.userName))
         }
       }
     }

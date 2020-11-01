@@ -1,5 +1,6 @@
 const { saveRecordConfig, recordSetting } = require('../config/config')
 const { login } = require('../config/domSelector')
+const { file } = require('../config/announce')
 const cp = require('child_process')
 const fs = require('fs')
 require('dotenv').config()
@@ -76,7 +77,7 @@ const helper = {
         (error) => {
           console.log(error);
         })
-      console.log(`[System]${fileName}.json is saved.`)
+      helper.announcer(file.saved(fileName))
       resolve()
     })
   },
@@ -130,11 +131,9 @@ const helper = {
     streamRecords.records = records
     streamRecords.ids = records.map(record => record.id)
   },
-  timeAnnounce(count) {
-    console.log(`\n第${count++}次執行檢查，輸入ctrl+c結束錄影 ${new Date().toLocaleString()}`)
-  },
-  announcer(message) {
-    console.log(`[System]${message}`)
+  announcer(message, addNewLine = false) {
+    console.log(`${addNewLine ? `\n` : ''}[System]${message}`)
+    // console.log都從這函式出發，可以設計紀錄資訊做成log
   }
 }
 
