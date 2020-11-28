@@ -31,11 +31,12 @@ module.exports = async (browser) => {
       helper.getJSObjData('usersData')
     ])
     const oldRecordLength = streamRecords.ids.length
-
+    let isDataUpdated = false
     for (record of records) {
       // 更新使用者資料
       if (!usersData.ids.includes(record.userId)) {
         helper.upDateUserData(usersData, record)
+        isDataUpdated = true
       }
 
       // 對照紀錄，並把新紀錄給加入並錄影
@@ -43,7 +44,7 @@ module.exports = async (browser) => {
         announcer(app.findNewRecord)
         streamRecords.ids.push(record.id)
         streamRecords.records.push(record)
-
+        isDataUpdated = true
         // 存取使用者資料做判斷
         const userData = usersData.records.find(user => user.userId === record.userId)
         if (!userData.disableTrack) {
@@ -69,10 +70,13 @@ module.exports = async (browser) => {
     } else {
       announcer(recordsStatus.isUpDated)
     }
-    await Promise.all([
-      helper.saveJSObjData('streamRecords', streamRecords),
-      helper.saveJSObjData('usersData', usersData)
-    ])
+
+    if (isDataUpdated) {
+      await Promise.all([
+        helper.saveJSObjData('streamRecords', streamRecords),
+        helper.saveJSObjData('usersData', usersData)
+      ])
+    }
 
   } catch (error) {
     console.log(error.name + ': ' + error.message)
