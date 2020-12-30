@@ -27,9 +27,9 @@ const helper = {
       const header = parentNode.children[0]
       const body = parentNode.children[1]
       const userName = header.innerText
-      const userIdUrl = header.children[0].children[0].href
+      const userIdUrl = header.children[0].children[0] && header.children[0].children[0].href || ''
       const userId = userIdUrl.replace('https://www.nicovideo.jp/user/', '')
-      const streamUrl = body.children[1].href
+      const streamUrl = body.children[1] && body.children[1].href || ''
       const id = streamUrl.replace('https://live.nicovideo.jp/watch/lv', '')
       const createdTime = Date.now()
       const createdLocalTime = new Date()
@@ -102,10 +102,10 @@ const helper = {
         console.log(`Name: ${error.name}\nMessage: ${error.message}\nStack: ${error.stack}`)
       }
     })
-    process.on('exit', function () {
-      console.log(`${fileName}'s record process killed`)
-      commands.kill()
-    })
+    // process.on('exit', function () {
+    //   console.log(`${fileName}'s record process killed`)
+    //   commands.kill()
+    // })
   },
   timeRecord() {
     const time = new Date()

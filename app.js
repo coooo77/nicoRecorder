@@ -18,7 +18,7 @@ module.exports = async (browser) => {
     }
 
     // 開始取得實況紀錄
-    helper.wait(2000)
+    await helper.wait(2000)
     announcer(app.startToFetchRecords)
     const { activeTimeLineItem, getMoreBtn } = homePage
 
