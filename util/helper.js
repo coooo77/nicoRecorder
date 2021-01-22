@@ -27,10 +27,13 @@ const helper = {
       const header = parentNode.children[0]
       const body = parentNode.children[1]
       const userName = header.innerText
-      const userIdUrl = header.children[0].children[0] && header.children[0].children[0].href || ''
+      const userIdUrl = (header.children[0].children[0] && header.children[0].children[0].href) || ''
       const userId = userIdUrl.replace('https://www.nicovideo.jp/user/', '')
-      const streamUrl = body.children[1] && body.children[1].href || ''
-      const id = streamUrl.replace('https://live.nicovideo.jp/watch/lv', '')
+      const streamUrl = (body.children[1] && body.children[1].href) || ''
+      // let id = streamUrl.replace('https://live.nicovideo.jp/watch/lv', '')
+      // id = id.includes('?') ? id.split('?')[0] : id
+      const splitIndex = streamUrl.indexOf('lv')
+      const id = streamUrl.slice(splitIndex + 2, splitIndex + 11)
       const createdTime = Date.now()
       const createdLocalTime = new Date()
       return ({
