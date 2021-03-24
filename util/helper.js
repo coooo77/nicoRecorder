@@ -56,10 +56,13 @@ const helper = {
     set count=0\n
     :loop\n
     set hour=%time:~0,2%\n
+    set TodayYear=%date:~0,4%\n
+    set TodayMonthP0=%date:~5,2%\n
+    set TodayDayP0=%date:~8,2%\n
     if "%hour:~0,1%" == " " set hour=0%hour:~1,1%\n
     set /a count+=1\n
     echo [CountDown] Loop for ${recordSetting.maxTryTimes} times, try %count% times ... \n
-    streamlink %url% best -o D://JD\\%name%_Nico_%DATE%_%hour%%time:~3,2%%time:~6,2%.mp4\n
+    streamlink %url% best -o D://JD\\%name%_Nico_%TodayYear%%TodayMonthP0%%TodayDayP0%_%hour%%time:~3,2%%time:~6,2%.ts\n
     if "%count%" == "${recordSetting.maxTryTimes}" exit\n
     echo [CountDown] count down for 30 sec...\n
     @ping 127.0.0.1 -n ${recordSetting.reTryInterval} -w 1000 > nul\n

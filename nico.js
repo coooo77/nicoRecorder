@@ -4,32 +4,29 @@ const { timeAnnounce, announcer } = require('./util/helper')
 const app = require('./app')
 const puppeteer = require('puppeteer-core');
 
-function runningApp(count, browser) {
+let recursionTime = 1
+
+function startApp(browser) {
   return new Promise((resolve, reject) => {
     try {
-      let test = setInterval(async function () {
-        announcer(nico.timeAnnounce(count++), true)
+      setTimeout(async () => {
+        announcer(nico.timeAnnounce(recursionTime++), true)
         await app(browser)
-        if (count === 1000) {
-          clearInterval(test)
-          test = null
-          resolve(count)
-        }
-      }, checkStreamInterval);
+        resolve()
+      }, checkStreamInterval)
     } catch (error) {
-      console.log(error)
+      console.error(error)
       reject()
     }
   })
-}
+};
 
 (async () => {
   announcer(nico.startToMonitor)
-  let count = 1
-  announcer(nico.timeAnnounce(count++), true)
+  announcer(nico.timeAnnounce(recursionTime++), true)
   const browser = await puppeteer.launch(setting);
   await app(browser)
   while (true) {
-    count = await runningApp(count, browser)
+    await startApp(browser)
   }
 })()
