@@ -16,24 +16,25 @@ module.exports = {
       isNotExist: 'UsersData.json is not exist',
       startToCreate: 'Start to create usersData.json'
     },
-    initiationIsFinished: 'Initiation finished'
+    initiationIsFinished: 'Initiation finished',
+    verification: 'User needs to verify identify, enter code please. '
   },
   app: {
     startToLogin: 'User needs to login, start to login...',
     startToFetchRecords: 'Start to fetch stream records...',
     findNewRecord: 'Find a new record, save it to model and record the stream',
-    startToRecord: (msg,url) => `Start to record user ${msg} , url of stream is ${url}`,
+    startToRecord: (msg, url) => `Start to record user ${msg} , url of stream is ${url}`,
     stopToRecord: msg => `User ${msg} record setting is disabled, stop to record`,
     recordsStatus: {
       isUpDated: 'Records updated',
       isUnChanged: 'Records unChanged'
     }
   },
-  file:{
+  file: {
     saved: msg => `${msg}.json is saved`
   },
-  nico:{
-    startToMonitor:'Start to monitor nico web site ...',
+  nico: {
+    startToMonitor: 'Start to monitor nico web site ...',
     timeAnnounce: msg => `第${msg}次執行檢查，輸入ctrl+c結束錄影 ${new Date().toLocaleString()}`
   }
 }

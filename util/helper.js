@@ -3,6 +3,7 @@ const { login } = require('../config/domSelector')
 const { file } = require('../config/announce')
 const cp = require('child_process')
 const fs = require('fs')
+const readline = require('readline');
 require('dotenv').config()
 
 const helper = {
@@ -140,6 +141,18 @@ const helper = {
   announcer(message, addNewLine = false) {
     console.log(`${addNewLine ? `\n` : ''}[System]${message}`)
     // console.log都從這函式出發，可以設計紀錄資訊做成log
+  },
+  manualInput(msg) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    });
+    return new Promise(resolve => {
+      rl.question(msg, answer => {
+        rl.close()
+        resolve(answer)
+      })
+    })
   }
 }
 

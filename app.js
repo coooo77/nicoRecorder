@@ -1,7 +1,7 @@
 const helper = require('./util/helper')
 const { announcer } = require('./util/helper')
-const { app } = require('./config/announce')
-const { login, homePage } = require('./config/domSelector')
+const { app, init } = require('./config/announce')
+const { login, homePage, verification } = require('./config/domSelector')
 const { url, saveRecordConfig } = require('./config/config')
 
 module.exports = async (browser) => {
@@ -15,7 +15,40 @@ module.exports = async (browser) => {
     if (loginBtn) {
       announcer(app.startToLogin)
       await helper.login(page)
+      await page.screenshot({ path: 'afterLogin.png' });
     }
+
+    const {
+      verificationInput,
+      verificationLoginBtn,
+      verificationFailInfo
+    } = verification
+    const [input] = await Promise.all([page.$(verificationInput)])
+
+    let timer
+
+    if (input) {
+      const verifyCode = await helper.manualInput(init.verification)
+      await page.click(verificationInput)
+      await page.keyboard.type(verifyCode)
+      await Promise.all([
+        page.click(verificationLoginBtn),
+        page.waitForNavigation()
+      ])
+      await page.screenshot({ path: 'afterVerification.png' })
+
+      timer = setTimeout(async () => {
+        const invalidCodeInfo = await page.$(verificationFailInfo)
+
+        if (invalidCodeInfo) {
+          throw Error('Verification Fail')
+        } else {
+          throw Error('Verification Timeout')
+        }
+      }, 30000);
+    }
+
+    if (timer) clearTimeout(timer)
 
     // 開始取得實況紀錄
     await helper.wait(2000)
@@ -80,6 +113,9 @@ module.exports = async (browser) => {
 
   } catch (error) {
     console.log(error.name + ': ' + error.message)
+    if (error.message.includes('Verification')) {
+      throw Error('Verification Fail from app.js')
+    }
   } finally {
     await page.close();
   }
